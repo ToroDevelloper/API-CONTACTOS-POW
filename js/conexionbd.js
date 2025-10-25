@@ -3,7 +3,9 @@ const express = require("express")
 const app = express()
 
 app.use(express.json())
-app.use(express.static("public"))
+app.use(express.static("public/vistas"))
+app.use("/estilos", express.static("public/estilos"))
+app.use("/js", express.static("public/js"))
 
 let conexion = mysql.createConnection({
     host: "localhost",
@@ -19,11 +21,11 @@ conexion.connect(function(err) {
 
 // Ver contactos
 app.get("/contactos", (req, res) => {
-    const sql = `SELECT c.*, g.detalle_genero, d.detalle_direccion, t.detalle_tipo_telefono 
+    const sql = `SELECT c.*, g.detalle_genero, d.detalle_direccion, t.detalle_tipo_telefono
                  FROM contacto c
-                 LEFT JOIN genero g ON c.id_genero = g.id_genero
-                 LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
-                 LEFT JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono`
+                          LEFT JOIN genero g ON c.id_genero = g.id_genero
+                          LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
+                          LEFT JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono`
 
     conexion.query(sql, (err, result) => {
         if (err) throw err
