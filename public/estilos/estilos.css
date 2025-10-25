@@ -1,0 +1,28 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Formulario */
+.formulario-contacto {
+    max-width: 600px;
+}
+
+/* Tabla */
+.table {
+    background-color: white;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+}
+
+/* Botones */
+.btn {
+    margin-right: 5px;
+}
