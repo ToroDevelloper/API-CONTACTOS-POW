@@ -9,7 +9,7 @@
 <body class="container mt-4">
 
 <h1>DIRECTORIO DE CONTACTOS</h1>
-<a href="crearcontacto.html" class="btn btn-success mb-3">+ Nuevo Contacto</a>
+<a href="/crearcontacto" class="btn btn-success mb-3">+ Nuevo Contacto</a>
 
 <table class="table table-striped">
     <thead>
@@ -22,9 +22,19 @@
         <th>EMAIL</th>
     </tr>
     </thead>
-    <tbody id="tbody"></tbody>
+    <tbody>
+    <% contactos.forEach(function(c) { %>
+        <tr>
+            <td><%= c.id_contacto %></td>
+            <td><%= c.primer_nombre %> <%= c.segundo_nombre || '' %> <%= c.primer_apellido %> <%= c.segundo_apellido || '' %></td>
+            <td><%= c.detalle_genero || '' %></td>
+            <td><%= c.detalle_direccion || '' %></td>
+            <td><%= c.telefono || '' %></td>
+            <td><%= c.email || '' %></td>
+        </tr>
+    <% }); %>
+    </tbody>
 </table>
 
-<script src="/js/index.js"></script>
 </body>
 </html>

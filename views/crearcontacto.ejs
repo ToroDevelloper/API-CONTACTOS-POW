@@ -9,9 +9,9 @@
 <body class="container mt-4">
 
 <h2>Crear Contacto</h2>
-<a href="index.html" class="btn btn-secondary mb-3">← Volver</a>
+<a href="/" class="btn btn-secondary mb-3">← Volver</a>
 
-<form id="form" class="formulario-contacto">
+<form method="POST" action="/contacto" class="formulario-contacto">
     <input type="text" class="form-control mb-2" name="primer_nombre" placeholder="Primer Nombre *" required>
     <input type="text" class="form-control mb-2" name="segundo_nombre" placeholder="Segundo Nombre">
     <input type="text" class="form-control mb-2" name="primer_apellido" placeholder="Primer Apellido *" required>
@@ -19,14 +19,23 @@
 
     <select class="form-select mb-2" name="id_genero" id="genero" required>
         <option value="">Género *</option>
+        <% generos.forEach(function(g) { %>
+            <option value="<%= g.id_genero %>"><%= g.detalle_genero %></option>
+        <% }); %>
     </select>
 
     <select class="form-select mb-2" name="id_direccion" id="direccion">
         <option value="">Dirección</option>
+        <% direcciones.forEach(function(d) { %>
+            <option value="<%= d.id_direccion %>"><%= d.detalle_direccion %></option>
+        <% }); %>
     </select>
 
     <select class="form-select mb-2" name="id_tipo_telefono" id="tipo">
         <option value="">Tipo Teléfono</option>
+        <% tipos.forEach(function(t) { %>
+            <option value="<%= t.id_tipo_telefono %>"><%= t.detalle_tipo_telefono %></option>
+        <% }); %>
     </select>
 
     <input type="email" class="form-control mb-2" name="email" placeholder="Email">
@@ -35,6 +44,5 @@
     <button type="submit" class="btn btn-primary w-100">Guardar</button>
 </form>
 
-<script src="/js/crear.js"></script>
 </body>
 </html>
