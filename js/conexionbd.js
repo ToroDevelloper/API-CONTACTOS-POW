@@ -1,4 +1,4 @@
-const mysql = require("mysql")
+const mysql = require("mysql2")
 const express = require("express")
 const app = express()
 
@@ -16,7 +16,8 @@ let conexion = mysql.createConnection({
     host: "localhost",
     database: "contactos",
     user: "root",
-    password: ""
+    password: "",
+    port: 3306
 })
 
 conexion.connect(function(err) {
@@ -28,9 +29,9 @@ conexion.connect(function(err) {
 app.get("/", (req, res) => {
     const sql = `SELECT c.*, g.detalle_genero, d.detalle_direccion, t.detalle_tipo_telefono
                  FROM contacto c
-                          LEFT JOIN genero g ON c.id_genero = g.id_genero
-                          LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
-                          LEFT JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono`
+                            LEFT JOIN genero g ON c.id_genero = g.id_genero
+                            LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
+                            LEFT JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono`
 
     conexion.query(sql, (err, contactos) => {
         if (err) throw err
