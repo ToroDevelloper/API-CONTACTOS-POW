@@ -21,7 +21,7 @@ USE `contactos`;
 
 -- Dumping structure for table contactos.contacto
 CREATE TABLE IF NOT EXISTS `contacto` (
-  `id_contacto` double NOT NULL AUTO_INCREMENT,
+  `id_contacto` int NOT NULL AUTO_INCREMENT,
   `primer_nombre` varchar(50) NOT NULL,
   `segundo_nombre` varchar(50) DEFAULT NULL,
   `primer_apellido` varchar(50) NOT NULL,
