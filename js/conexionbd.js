@@ -76,9 +76,25 @@ app.get("/datos", (req, res) => {
 
 // Crear contacto
 app.post("/contacto", (req, res) => {
+    // Excluir id_contacto y limpiar datos vacíos
+    const { id_contacto, ...rawData } = req.body
+
+    // Convertir strings vacíos a null
+    const data = {}
+    for (let key in rawData) {
+        if (rawData[key] === "" || rawData[key] === undefined) {
+            data[key] = null
+        } else {
+            data[key] = rawData[key]
+        }
+    }
+
     const sql = "INSERT INTO contacto SET ?"
-    conexion.query(sql, req.body, (err, result) => {
-        if (err) return res.status(500).json({ error: err })
+    conexion.query(sql, data, (err, result) => {
+        if (err) {
+            console.error("Error al crear contacto:", err)
+            return res.status(500).json({ error: err.message })
+        }
         res.redirect("/")
     })
 })
