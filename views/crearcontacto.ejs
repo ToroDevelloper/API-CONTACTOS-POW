@@ -1,62 +1,90 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Crear Contacto</title>
-    <meta charset="utf-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/estilos/estilos.css" rel="stylesheet">
 </head>
+
 <body class="container mt-4">
+    <h1 class="text-center">CREAR CONTACTO</h1>
+    <a href="/" class="btn btn-secondary mb-3">← Volver</a>
 
-<h2>Crear Contacto</h2>
-<a href="/" class="btn btn-secondary mb-3">← Volver</a>
+    <form method="POST" action="/contacto" class="card p-4">
+        <h5>Información Personal</h5>
 
-<form method="POST" action="/contacto" class="formulario-contacto">
-    <!-- NO incluir campo id_contacto, se genera automáticamente -->
-    <input type="text" class="form-control mb-2" name="primer_nombre" placeholder="Primer Nombre *" required>
-    <input type="text" class="form-control mb-2" name="segundo_nombre" placeholder="Segundo Nombre">
-    <input type="text" class="form-control mb-2" name="primer_apellido" placeholder="Primer Apellido *" required>
-    <input type="text" class="form-control mb-2" name="segundo_apellido" placeholder="Segundo Apellido">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Primer Nombre *</label>
+                <input type="text" class="form-control" name="primer_nombre" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Segundo Nombre</label>
+                <input type="text" class="form-control" name="segundo_nombre">
+            </div>
+        </div>
 
-    <select class="form-select mb-2" name="id_genero" id="genero" required>
-        <option value="">Género *</option>
-        <% generos.forEach(function(g) { %>
-            <option value="<%= g.id_genero %>"><%= g.detalle_genero %></option>
-        <% }); %>
-    </select>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Primer Apellido *</label>
+                <input type="text" class="form-control" name="primer_apellido" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Segundo Apellido</label>
+                <input type="text" class="form-control" name="segundo_apellido">
+            </div>
+        </div>
 
-    <select class="form-select mb-2" name="id_direccion" id="direccion">
-        <option value="">Dirección (opcional)</option>
-        <% direcciones.forEach(function(d) { %>
-            <option value="<%= d.id_direccion %>"><%= d.detalle_direccion %></option>
-        <% }); %>
-    </select>
+        <div class="mb-3">
+            <label class="form-label">Género</label>
+            <select class="form-select" name="id_genero">
+                <option value="">Seleccionar género</option>
+                <% generos.forEach(function(g) { %>
+                    <option value="<%= g.id_genero %>">
+                        <%= g.detalle_genero %>
+                    </option>
+                    <% }); %>
+            </select>
+        </div>
 
-    <select class="form-select mb-2" name="id_tipo_telefono" id="tipo">
-        <option value="">Tipo Teléfono (opcional)</option>
-        <% tipos.forEach(function(t) { %>
-            <option value="<%= t.id_tipo_telefono %>"><%= t.detalle_tipo_telefono %></option>
-        <% }); %>
-    </select>
+        <h5 class="mt-4">Información de Contacto</h5>
 
-    <input type="email" class="form-control mb-2" name="email" placeholder="Email">
-    <input type="text" class="form-control mb-2" name="telefono" placeholder="Teléfono">
-    <input type="text" class="form-control mb-2" name="imagen" placeholder="Imagen (URL)">
+        <div class="mb-3">
+            <label class="form-label">Dirección</label>
+            <select class="form-select" name="id_direccion">
+                <option value="">Seleccionar dirección</option>
+                <% direcciones.forEach(function(d) { %>
+                    <option value="<%= d.id_direccion %>">
+                        <%= d.detalle_direccion %>
+                    </option>
+                    <% }); %>
+            </select>
+        </div>
 
-    <button type="submit" class="btn btn-primary w-100">Guardar</button>
-</form>
+        <div class="mb-3">
+            <label class="form-label">Tipo de Teléfono</label>
+            <select class="form-select" name="id_tipo_telefono">
+                <option value="">Seleccionar tipo</option>
+                <% tipos.forEach(function(t) { %>
+                    <option value="<%= t.id_tipo_telefono %>">
+                        <%= t.detalle_tipo_telefono %>
+                    </option>
+                    <% }); %>
+            </select>
+        </div>
 
-<script>
-    // Limpiar campos vacíos antes de enviar
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const selects = this.querySelectorAll('select');
-        selects.forEach(select => {
-            if (select.value === '') {
-                select.removeAttribute('name');
-            }
-        });
-    });
-</script>
+        <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" name="telefono">
+        </div>
 
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email">
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Guardar Contacto</button>
+    </form>
 </body>
+
 </html>
