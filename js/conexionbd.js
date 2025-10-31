@@ -2,17 +2,11 @@ const mysql = require("mysql2")
 const express = require("express")
 const app = express()
 
-// Configurar EJS como motor de plantillas
 app.set("view engine", "ejs")
-app.set("views", "./views")
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
 app.use(express.static("public"))
-app.use("/estilos", express.static("public/estilos"))
-app.use("/js", express.static("public/js"))
+app.use(express.urlencoded({ extended: true }))
 
-let conexion = mysql.createConnection({
+const db = mysql.createConnection({
     host: "localhost",
     database: "contactos",
     user: "root",
@@ -20,99 +14,67 @@ let conexion = mysql.createConnection({
     port: 3306
 })
 
-conexion.connect(function(err) {
+db.connect((err) => {
     if (err) throw err
-    console.log("Conexión exitosa")
+    console.log("Conectado a la base de datos")
 })
 
-// Ruta principal - Ver contactos
-app.get("/", (req, res) => {
-    const sql = `SELECT c.*, g.detalle_genero, d.detalle_direccion, t.detalle_tipo_telefono
-                 FROM contacto c
-                            LEFT JOIN genero g ON c.id_genero = g.id_genero
-                            LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
-                            LEFT JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono`
+function getFormData(callback) {
+    db.query("SELECT * FROM genero", (err1, generos) => {
+        db.query("SELECT * FROM direccion", (err2, direcciones) => {
+            db.query("SELECT * FROM tipo_telefono", (err3, tipos) => {
+                callback({ generos, direcciones, tipos })
+            })
+        })
+    })
+}
 
-    conexion.query(sql, (err, contactos) => {
+app.get("/", (req, res) => {
+    const sql = `
+        SELECT c.*, g.detalle_genero, d.detalle_direccion, t.detalle_tipo_telefono
+        FROM contacto c
+        INNER JOIN genero g ON c.id_genero = g.id_genero
+        INNER JOIN direccion d ON c.id_direccion = d.id_direccion
+        INNER JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono
+    `
+
+    db.query(sql, (err, contactos) => {
         if (err) throw err
         res.render("index", { contactos })
     })
 })
 
-// Ruta para crear contacto - mostrar formulario
+
 app.get("/crearcontacto", (req, res) => {
-    conexion.query("SELECT * FROM genero", (e1, generos) => {
-        conexion.query("SELECT * FROM direccion", (e2, direcciones) => {
-            conexion.query("SELECT * FROM tipo_telefono", (e3, tipos) => {
-                res.render("crearcontacto", { generos, direcciones, tipos })
-            })
-        })
+    getFormData((data) => {
+        res.render("crearcontacto", data)
     })
 })
 
-// API - Ver contactos (JSON)
-app.get("/contactos", (req, res) => {
-    const sql = `SELECT c.*, g.detalle_genero, d.detalle_direccion, t.detalle_tipo_telefono
-                 FROM contacto c
-                          LEFT JOIN genero g ON c.id_genero = g.id_genero
-                          LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
-                          LEFT JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono`
-
-    conexion.query(sql, (err, result) => {
-        if (err) throw err
-        res.json(result)
-    })
-})
-
-// API - Datos para formulario (JSON)
-app.get("/datos", (req, res) => {
-    conexion.query("SELECT * FROM genero", (e1, generos) => {
-        conexion.query("SELECT * FROM direccion", (e2, direcciones) => {
-            conexion.query("SELECT * FROM tipo_telefono", (e3, tipos) => {
-                res.json({ generos, direcciones, tipos })
-            })
-        })
-    })
-})
-
-// Crear contacto
 app.post("/contacto", (req, res) => {
-    // Excluir id_contacto y limpiar datos vacíos
-    const { id_contacto, ...rawData } = req.body
-
-    // Convertir strings vacíos a null
     const data = {}
-    for (let key in rawData) {
-        if (rawData[key] === "" || rawData[key] === undefined) {
-            data[key] = null
-        } else {
-            data[key] = rawData[key]
-        }
-    }
+
+
+    Object.keys(req.body).forEach(key => {
+        data[key] = req.body[key] === '' ? null : req.body[key]
+    })
 
     const sql = "INSERT INTO contacto SET ?"
-    conexion.query(sql, data, (err, result) => {
-        if (err) {
-            console.error("Error al crear contacto:", err)
-            return res.status(500).json({ error: err.message })
-        }
+    db.query(sql, data, (err, result) => {
+        if (err) throw err
         res.redirect("/")
     })
 })
 
-// Agregar esta ruta en conexionbd.js después de las rutas existentes
-
-// Ruta para estadísticas de contactos por barrio
 app.get("/estadisticas", (req, res) => {
-    // Primero obtener el total de contactos
+
     const sqlTotal = "SELECT COUNT(*) as total FROM contacto"
 
-    conexion.query(sqlTotal, (err, totalResult) => {
+    db.query(sqlTotal, (err, totalResult) => {
         if (err) throw err
 
         const totalContactos = totalResult[0].total
 
-        // Luego obtener contactos por barrio
         const sqlBarrios = `
             SELECT 
                 d.detalle_direccion as barrio,
@@ -124,7 +86,7 @@ app.get("/estadisticas", (req, res) => {
             ORDER BY cantidad DESC
         `
 
-        conexion.query(sqlBarrios, [totalContactos], (err, barrios) => {
+        db.query(sqlBarrios, [totalContactos], (err, barrios) => {
             if (err) throw err
 
             res.render("estadisticas", {
