@@ -100,6 +100,41 @@ app.post("/contacto", (req, res) => {
     })
 })
 
+// Agregar esta ruta en conexionbd.js después de las rutas existentes
+
+// Ruta para estadísticas de contactos por barrio
+app.get("/estadisticas", (req, res) => {
+    // Primero obtener el total de contactos
+    const sqlTotal = "SELECT COUNT(*) as total FROM contacto"
+
+    conexion.query(sqlTotal, (err, totalResult) => {
+        if (err) throw err
+
+        const totalContactos = totalResult[0].total
+
+        // Luego obtener contactos por barrio
+        const sqlBarrios = `
+            SELECT 
+                d.detalle_direccion as barrio,
+                COUNT(c.id_contacto) as cantidad,
+                ROUND((COUNT(c.id_contacto) * 100.0 / ?), 2) as porcentaje
+            FROM direccion d
+            LEFT JOIN contacto c ON d.id_direccion = c.id_direccion
+            GROUP BY d.id_direccion, d.detalle_direccion
+            ORDER BY cantidad DESC
+        `
+
+        conexion.query(sqlBarrios, [totalContactos], (err, barrios) => {
+            if (err) throw err
+
+            res.render("estadisticas", {
+                barrios,
+                totalContactos
+            })
+        })
+    })
+})
+
 app.listen(3000, () => {
     console.log("Servidor en http://localhost:3000")
 })
