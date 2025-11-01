@@ -36,6 +36,7 @@ app.get("/", (req, res) => {
         INNER JOIN genero g ON c.id_genero = g.id_genero
         INNER JOIN direccion d ON c.id_direccion = d.id_direccion
         INNER JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono
+        ORDER BY c.id_contacto ASC
     `
 
     db.query(sql, (err, contactos) => {
