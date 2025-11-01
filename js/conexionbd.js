@@ -80,7 +80,7 @@ app.get("/estadisticas", (req, res) => {
             SELECT 
                 d.detalle_direccion as barrio,
                 COUNT(c.id_contacto) as cantidad,
-                ROUND((COUNT(c.id_contacto) * 100.0 / ?), 2) as porcentaje
+                ROUND((COUNT(c.id_contacto) * 100.0 / NULLIF(?, 0)), 2) as porcentaje
             FROM direccion d
             LEFT JOIN contacto c ON d.id_direccion = c.id_direccion
             GROUP BY d.id_direccion, d.detalle_direccion
