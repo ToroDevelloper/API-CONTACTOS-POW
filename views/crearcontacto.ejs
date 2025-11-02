@@ -1,99 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Crear Contacto</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <title>Crear Contacto</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="container mt-4">
-    <h1 class="text-center">CREAR CONTACTO</h1>
-    <a href="/" class="btn btn-secondary mb-3">← Volver</a>
+  <h1 class="text-center">CREAR CONTACTO</h1>
+  <a href="/" class="btn btn-secondary mb-3">← Volver</a>
+  <form method="POST" action="/contacto" class="card p-4 mx-auto" style="max-width:720px">
+    <h5>Información Personal</h5>
+    <div class="mb-3">
+      <label class="form-label">Primer Nombre *</label>
+      <input type="text" class="form-control" name="primer_nombre" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Segundo Nombre</label>
+      <input type="text" class="form-control" name="segundo_nombre">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Primer Apellido *</label>
+      <input type="text" class="form-control" name="primer_apellido" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Segundo Apellido</label>
+      <input type="text" class="form-control" name="segundo_apellido">
+    </div>
 
-    <form method="POST" action="/contacto" class="card p-4">
-        <h5>Información Personal</h5>
+    <div class="mb-3">
+      <label class="form-label">Género</label>
+      <select class="form-select" name="id_genero">
+        <option value="">Seleccionar género</option>
+        <% generos.forEach(function(g){ %>
+          <option value="<%= g.id_genero %>"><%= g.detalle_genero %></option>
+        <% }) %>
+      </select>
+    </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Primer Nombre *</label>
-                <input type="text" class="form-control" name="primer_nombre" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Segundo Nombre</label>
-                <input type="text" class="form-control" name="segundo_nombre">
-            </div>
-        </div>
+    <h5 class="mt-4">Información de Contacto</h5>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Primer Apellido *</label>
-                <input type="text" class="form-control" name="primer_apellido" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Segundo Apellido</label>
-                <input type="text" class="form-control" name="segundo_apellido">
-            </div>
-        </div>
+    <div class="mb-3">
+      <label class="form-label">Dirección</label>
+      <select class="form-select" name="id_direccion">
+        <option value="">Seleccionar dirección</option>
+        <% direcciones.forEach(function(d){ %>
+          <option value="<%= d.id_direccion %>"><%= d.detalle_direccion %></option>
+        <% }) %>
+      </select>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Género</label>
-            <select class="form-select" name="id_genero">
-                <option value="">Seleccionar género</option>
-                <% generos.forEach(function(g) { %>
-                    <option value="<%= g.id_genero %>">
-                        <%= g.detalle_genero %>
-                    </option>
-                    <% }); %>
-            </select>
-        </div>
+    <div class="mb-3">
+      <label class="form-label">Tipo de Teléfono</label>
+      <select class="form-select" name="id_tipo_telefono">
+        <option value="">Seleccionar tipo</option>
+        <% tipos.forEach(function(t){ %>
+          <option value="<%= t.id_tipo_telefono %>"><%= t.detalle_tipo_telefono %></option>
+        <% }) %>
+      </select>
+    </div>
 
-        <h5 class="mt-4">Información de Contacto</h5>
+    <div class="mb-3">
+      <label class="form-label">Teléfono *</label>
+      <input id="telefono" name="telefono" maxlength="10" required placeholder="Solo números, 10 dígitos" class="form-control">
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Dirección</label>
-            <select class="form-select" name="id_direccion">
-                <option value="">Seleccionar dirección</option>
-                <% direcciones.forEach(function(d) { %>
-                    <option value="<%= d.id_direccion %>">
-                        <%= d.detalle_direccion %>
-                    </option>
-                    <% }); %>
-            </select>
-        </div>
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" name="email">
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Tipo de Teléfono</label>
-            <select class="form-select" name="id_tipo_telefono">
-                <option value="">Seleccionar tipo</option>
-                <% tipos.forEach(function(t) { %>
-                    <option value="<%= t.id_tipo_telefono %>">
-                        <%= t.detalle_tipo_telefono %>
-                    </option>
-                    <% }); %>
-            </select>
-        </div>
+    <button class="btn btn-primary">💾 Guardar Contacto</button>
+  </form>
 
-        <div class="mb-3">
-            <label class="form-label">Teléfono *</label>
-            <input type="text" 
-                   class="form-control" 
-                   name="telefono" 
-                   id="telefono"
-                   maxlength="10"
-                   required
-                   placeholder="Solo números, 10 dígitos">
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" name="email">
-        </div>
-
-        <button type="submit" class="btn btn-primary">💾 Guardar Contacto</button>
-    </form>
-
-    <script>
-        document.getElementById('telefono').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-    </script>
+  <script>
+    document.getElementById('telefono').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^0-9]/g,'') })
+  </script>
 </body>
 </html>
