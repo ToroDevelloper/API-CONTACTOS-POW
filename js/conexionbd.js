@@ -6,66 +6,78 @@ app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 
-const pool = mysql.createPool({
+const dbConfig = {
     host: 'localhost',
     database: 'contactos',
     user: 'root',
     password: '',
     port: 3306,
-    waitForConnections: true,
-    connectionLimit: 10,
-})
+}
 
-async function getFormData() {
-    const [generos] = await pool.query('SELECT * FROM genero')
-    const [direcciones] = await pool.query('SELECT * FROM direccion')
-    const [tipos] = await pool.query('SELECT * FROM tipo_telefono')
+async function getFormData(connection) {
+    const [generos] = await connection.query('SELECT * FROM genero')
+    const [direcciones] = await connection.query('SELECT * FROM direccion')
+    const [tipos] = await connection.query('SELECT * FROM tipo_telefono')
     return { generos, direcciones, tipos }
 }
 
 app.get('/', async (req, res) => {
+    let connection;
     try {
+        connection = await mysql.createConnection(dbConfig);
         const sql = `
             SELECT c.*, g.detalle_genero, d.detalle_direccion, t.detalle_tipo_telefono
             FROM contacto c
-            INNER JOIN genero g ON c.id_genero = g.id_genero
-            INNER JOIN direccion d ON c.id_direccion = d.id_direccion
-            INNER JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono
+            LEFT JOIN genero g ON c.id_genero = g.id_genero
+            LEFT JOIN direccion d ON c.id_direccion = d.id_direccion
+            LEFT JOIN tipo_telefono t ON c.id_tipo_telefono = t.id_tipo_telefono
             ORDER BY c.id_contacto ASC
         `
-        const [contactos] = await pool.query(sql)
+        const [contactos] = await connection.query(sql)
         res.render('index', { contactos })
     } catch (err) {
         console.error(err)
         res.status(500).send('Error interno')
+    } finally {
+        if (connection) connection.end();
     }
 })
 
 app.get('/crearcontacto', async (req, res) => {
+    let connection;
     try {
-        const data = await getFormData()
+        connection = await mysql.createConnection(dbConfig);
+        const data = await getFormData(connection)
         res.render('crearcontacto', data)
     } catch (err) {
         console.error(err)
         res.status(500).send('Error interno')
+    } finally {
+        if (connection) connection.end();
     }
 })
 
 app.post('/contacto', async (req, res) => {
+    let connection;
     try {
+        connection = await mysql.createConnection(dbConfig);
         const data = {}
         Object.keys(req.body).forEach(k => data[k] = req.body[k] === '' ? null : req.body[k])
-        await pool.query('INSERT INTO contacto SET ?', data)
+        await connection.query('INSERT INTO contacto SET ?', data)
         res.redirect('/')
     } catch (err) {
         console.error(err)
         res.status(500).send('Error interno')
+    } finally {
+        if (connection) connection.end();
     }
 })
 
 app.get('/estadisticas', async (req, res) => {
+    let connection;
     try {
-        const [[{ total }]] = await pool.query('SELECT COUNT(*) as total FROM contacto')
+        connection = await mysql.createConnection(dbConfig);
+        const [[{ total }]] = await connection.query('SELECT COUNT(*) as total FROM contacto')
         const totalContactos = total
         const sqlBarrios = `
             SELECT 
@@ -77,11 +89,13 @@ app.get('/estadisticas', async (req, res) => {
             GROUP BY d.id_direccion, d.detalle_direccion
             ORDER BY cantidad DESC
         `
-        const [barrios] = await pool.query(sqlBarrios, [totalContactos])
+        const [barrios] = await connection.query(sqlBarrios, [totalContactos])
         res.render('estadisticas', { barrios, totalContactos })
     } catch (err) {
         console.error(err)
         res.status(500).send('Error interno')
+    } finally {
+        if (connection) connection.end();
     }
 })
 
